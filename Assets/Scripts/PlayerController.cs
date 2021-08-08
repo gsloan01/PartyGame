@@ -30,6 +30,8 @@ public class PlayerController : MonoBehaviourPun
         //transform.Rotate(0, Input.GetAxis("Horizontal"), 0);
         //characterController.SimpleMove(transform.forward * Input.GetAxis("Vertical") * speed);
 
+        //transform.Rotate(0, transform.position.x, 0);
+
         if (Input.GetAxis("Horizontal") > 0.1 || Input.GetAxis("Horizontal") < -0.1 || Input.GetAxis("Vertical") > 0.1 || Input.GetAxis("Vertical") < -0.1)
         {
             Move();
@@ -52,8 +54,15 @@ public class PlayerController : MonoBehaviourPun
     void Move()
     {
         //transform.Translate(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * speed * Time.deltaTime);
-        rb.velocity += new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * speed * Time.deltaTime;
-        rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x, -5, 5), rb.velocity.y, Mathf.Clamp(rb.velocity.z, -5, 5));
+        //rb.velocity += new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * speed * Time.deltaTime;
+        //rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x, -5, 5), rb.velocity.y, Mathf.Clamp(rb.velocity.z, -5, 5));
+
+        float moveVertical = Input.GetAxis("Vertical");
+        float moveHorizontal = Input.GetAxis("Horizontal");
+
+        Vector3 newPosition = new Vector3(moveHorizontal, 0.0f, moveVertical);
+        transform.LookAt(newPosition + transform.position);
+        transform.Translate(newPosition * speed * Time.deltaTime, Space.World);
 
         animator.SetBool("Idle", false);
 
