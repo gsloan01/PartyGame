@@ -59,9 +59,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             return;
         }
-        health -= Time.deltaTime;
+        //health -= Time.deltaTime;
 
-        if (health <= 0) GameManager.Instance.LeaveRoom();
+        //if (health <= 0) GameManager.Instance.LeaveRoom();
     }
 
 }
