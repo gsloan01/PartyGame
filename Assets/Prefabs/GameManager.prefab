@@ -43,3 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87d8138305e73c247ae10f56db6a92cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 0}
+  showDebugs: 0
+  lobbyWaitTime: 10

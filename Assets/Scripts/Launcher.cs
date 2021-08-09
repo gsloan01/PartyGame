@@ -6,6 +6,13 @@ using UnityEngine;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
+    public static Launcher Instance { get { return instance; } }
+    static Launcher instance;
+
+    public int maxPlayers { get { return maxPlayersPerRoom; } }
+
+    public bool showDebugs = false;
+
     #region Private Serializable Fields
     [Tooltip("The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created")]
     [SerializeField]
@@ -39,11 +46,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
 
     #region MonoBehaviour CallBacks
-
-
-    /// <summary>
-    /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
-    /// </summary>
     void Awake()
     {
         // #Critical
@@ -51,12 +53,9 @@ public class Launcher : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = true;
     }
 
-
-    /// <summary>
-    /// MonoBehaviour method called on GameObject by Unity during initialization phase.
-    /// </summary>
     void Start()
     {
+        instance = this;
         progressLabel.SetActive(false);
         controlPanel.SetActive(true);
         //Connect();
@@ -67,8 +66,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
 
     #region Public Methods
-
-
     /// <summary>
     /// Start the connection process.
     /// - If already connected, we attempt joining a random room
@@ -92,11 +89,11 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
     }
 
-
     #endregion
+
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        Debug.Log("PUN Basics Tutorial/Launcher:OnJoinRandomFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
+        if (showDebugs) Debug.Log("PUN Basics Tutorial/Launcher:OnJoinRandomFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
 
         // #Critical: we failed to join a random room, maybe none exists or they are all full. No worries, we create a new room.
         PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = maxPlayersPerRoom });
@@ -104,40 +101,38 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+        if (showDebugs) Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+
         if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
         {
-            Debug.Log("We load the 'Room for 1' ");
-
+            if (showDebugs) Debug.Log("We load the 'Lobby' ");
 
             // #Critical
             // Load the Room Level.
-            PhotonNetwork.LoadLevel("Room for 1");
+            PhotonNetwork.LoadLevel("Lobby");
         }
     }
-    #region MonoBehaviourPunCallbacks Callbacks
 
+    #region MonoBehaviourPunCallbacks Callbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
+        if (showDebugs) Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
+
         if (isConnecting)
         {
             PhotonNetwork.JoinRandomRoom();
             isConnecting = false;
         }
-
     }
-
 
     public override void OnDisconnected(DisconnectCause cause)
     {
         progressLabel.SetActive(false);
         controlPanel.SetActive(true);
         isConnecting = false;
-        Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
+        if (showDebugs) Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
     }
-
 
     #endregion
 
